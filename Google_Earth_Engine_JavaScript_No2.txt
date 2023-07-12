@@ -1,0 +1,30 @@
+https://code.earthengine.google.com/50fa48bcb35d1300df4f0d4d20868163
+
+---
+//set dataset feature (Area)
+var dataset = ee.FeatureCollection("FAO/GAUL/2015/level0");
+var Thailand = dataset.filter(ee.Filter.eq('ADM0_NAME', 'Thailand'));
+Map.setCenter(100.52, 14.04, 5);
+
+// Filter datasets for bands and period
+var NO2 = ee.ImageCollection('COPERNICUS/S5P/NRTI/L3_NO2')
+      .select('NO2_column_number_density')
+      .filterBounds(Thailand)
+      .filterDate('2022-01-01', '2022-01-31');
+      
+// Calculate means for visualisation
+var NO2_mean = NO2.mean()
+  .clip(Thailand);
+  
+// Set visualisation parameters
+var NO2Vis = {
+  min: 0,
+  max: 0.0002,
+  opacity: 1.0,
+  palette: [
+    "black", "blue", "purple", "cyan", "green", "yellow", "red"
+  ],
+};
+
+// Visualize maps
+Map.addLayer(NO2_mean, NO2Vis, 'NO2');
